@@ -1,3 +1,4 @@
+function initGlobe() {
 
     console.log('Globe initializing...');
     // Add console logging to track execution flow
@@ -1953,3 +1954,15 @@
         document.body.appendChild(button);
         document.body.appendChild(overlay);
     };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("container");
+  const observer = new IntersectionObserver((entries, obs) => {
+    if (entries[0].isIntersecting) {
+      initGlobe();
+      obs.disconnect(); // only initialize once
+    }
+  }, { threshold: 0.1 });
+  observer.observe(container);
+});
