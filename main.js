@@ -891,18 +891,214 @@ const createCurvedPath = (start, end) => {
   };
 
   // --- Table Button (kept simple) ---
-  const createTableButton = () => {
-    const btn = document.createElement('div');
-    btn.style.cssText = `
-      position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
-      background:rgba(0,0,0,0.7); padding:10px 20px; border-radius:20px; color:white; cursor:pointer; z-index:1000;
+// Create See Tables button and overlay
+const createTableButton = () => {
+    // Create the button
+    const button = document.createElement('div');
+    button.style.cssText = `
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        padding: 12px 24px;
+        border-radius: 25px;
+        color: white;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        z-index: 1000;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     `;
-    btn.textContent = 'See Tables';
-    btn.addEventListener('click', () => {
-      alert('Table UI placeholder — implement as needed.');
+    button.textContent = 'See Tables';
+
+    // Hover effects
+    button.addEventListener('mouseenter', () => {
+        button.style.background = 'rgba(255, 255, 255, 0.1)';
+        button.style.transform = 'translateX(-50%) scale(1.05)';
     });
-    document.body.appendChild(btn);
-  };
+
+    button.addEventListener('mouseleave', () => {
+        button.style.background = 'rgba(0, 0, 0, 0.7)';
+        button.style.transform = 'translateX(-50%) scale(1)';
+    });
+
+    // Create the overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        overflow-y: auto;
+    `;
+
+    // Create overlay content
+    const content = document.createElement('div');
+    content.style.cssText = `
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+        color: white;
+        font-family: Arial, sans-serif;
+    `;
+
+    // Add close button
+    const closeButton = document.createElement('div');
+    closeButton.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.3s ease;
+    `;
+    closeButton.innerHTML = '×';
+    closeButton.addEventListener('mouseenter', () => {
+        closeButton.style.background = 'rgba(255, 255, 255, 0.2)';
+    });
+    closeButton.addEventListener('mouseleave', () => {
+        closeButton.style.background = 'rgba(255, 255, 255, 0.1)';
+    });
+
+    // Add content sections
+    content.innerHTML = `
+        <h1 style="
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #fff;
+        ">AIME Philosophy & Programs</h1>
+
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        ">
+            <div class="section">
+                <h2 style="color: #ff9999; margin-bottom: 20px;">Embassies</h2>
+                <div class="table" style="
+                    background: rgba(255, 153, 153, 0.1);
+                    border-radius: 10px;
+                    padding: 20px;
+                ">
+                    ${MAJOR_CITIES.map(city => `
+                        <div style="
+                            padding: 10px;
+                            border-bottom: 1px solid rgba(255, 153, 153, 0.2);
+                        ">
+                            <h3 style="margin: 0; color: #ff9999;">${city.name}</h3>
+                            <p style="margin: 5px 0 0 0; opacity: 0.8;">
+                                Coordinates: ${city.lat.toFixed(2)}°, ${city.lon.toFixed(2)}°
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 style="color: #99ccff; margin-bottom: 20px;">Tools</h2>
+                <div class="table" style="
+                    background: rgba(153, 204, 255, 0.1);
+                    border-radius: 10px;
+                    padding: 20px;
+                ">
+                    ${getAllTools().map(tool => `
+                        <div style="
+                            padding: 10px;
+                            border-bottom: 1px solid rgba(153, 204, 255, 0.2);
+                        ">
+                            <h3 style="margin: 0; color: #99ccff;">${tool.name}</h3>
+                            <p style="margin: 5px 0 0 0; opacity: 0.8;">${tool.focus}</p>
+                            <p style="margin: 5px 0 0 0; opacity: 0.6;">
+                                Category: ${tool.category} | Type: ${tool.type}
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 style="color: #99ff99; margin-bottom: 20px;">Earth Shots</h2>
+                <div class="table" style="
+                    background: rgba(153, 255, 153, 0.1);
+                    border-radius: 10px;
+                    padding: 20px;
+                ">
+                    ${EARTH_SHOTS.map(shot => `
+                        <div style="
+                            padding: 10px;
+                            border-bottom: 1px solid rgba(153, 255, 153, 0.2);
+                        ">
+                            <h3 style="margin: 0; color: #99ff99;">${shot.name}</h3>
+                            <p style="margin: 5px 0 0 0; opacity: 0.8;">
+                                Location: ${shot.lat.toFixed(2)}°, ${shot.lon.toFixed(2)}°
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+
+        <div style="
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-top: 40px;
+        ">
+            <h2 style="margin-bottom: 20px;">About AIME</h2>
+            <p style="
+                max-width: 800px;
+                margin: 0 auto;
+                line-height: 1.6;
+                opacity: 0.8;
+            ">
+                AIME is a global network connecting imagination with opportunity. 
+                Through our embassies, tools, and environmental initiatives, we're 
+                building bridges between cultures and creating pathways for positive change.
+            </p>
+        </div>
+    `;
+
+    overlay.appendChild(closeButton);
+    overlay.appendChild(content);
+
+    // Add click handlers
+    button.addEventListener('click', () => {
+        overlay.style.display = 'block';
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+        }, 10);
+    });
+
+    closeButton.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+    });
+
+    document.body.appendChild(button);
+    document.body.appendChild(overlay);
+};
 
   // --- Animation Loop with FPS cap and idle skipping ---
   function animate(now) {
