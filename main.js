@@ -883,7 +883,6 @@ const createCurvedPath = (start, end) => {
         }
         needsRender = true;
       });
-
       panel.appendChild(row);
     });
 
@@ -915,15 +914,22 @@ const createTableButton = () => {
     `;
     button.textContent = 'See Tables';
 
-    // Hover effects
-    button.addEventListener('mouseenter', () => {
-        button.style.background = 'rgba(255, 255, 255, 0.1)';
-        button.style.transform = 'translateX(-50%) scale(1.05)';
-    });
+    // Create the Return to Globe button (initially hidden)
+    const returnButton = document.createElement('div');
+    returnButton.style.cssText = button.style.cssText + ' display: none; z-index: 3000;'; // Higher z-index to appear in front
+    returnButton.textContent = 'Return to Globe';
 
-    button.addEventListener('mouseleave', () => {
-        button.style.background = 'rgba(0, 0, 0, 0.7)';
-        button.style.transform = 'translateX(-50%) scale(1)';
+    // Hover effects for both buttons
+    [button, returnButton].forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.background = 'rgba(255, 255, 255, 0.1)';
+            btn.style.transform = 'translateX(-50%) scale(1.05)';
+        });
+
+        btn.addEventListener('mouseleave', () => {
+            btn.style.background = 'rgba(0, 0, 0, 0.7)';
+            btn.style.transform = 'translateX(-50%) scale(1)';
+        });
     });
 
     // Create the overlay
@@ -968,6 +974,7 @@ const createTableButton = () => {
         justify-content: center;
         font-size: 20px;
         transition: all 0.3s ease;
+        z-index: 2001;
     `;
     closeButton.innerHTML = '×';
     closeButton.addEventListener('mouseenter', () => {
@@ -1084,19 +1091,33 @@ const createTableButton = () => {
     // Add click handlers
     button.addEventListener('click', () => {
         overlay.style.display = 'block';
+        button.style.display = 'none';
+        returnButton.style.display = 'block';
         setTimeout(() => {
             overlay.style.opacity = '1';
         }, 10);
+    });
+
+    returnButton.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            returnButton.style.display = 'none';
+            button.style.display = 'block';
+        }, 300);
     });
 
     closeButton.addEventListener('click', () => {
         overlay.style.opacity = '0';
         setTimeout(() => {
             overlay.style.display = 'none';
+            returnButton.style.display = 'none';
+            button.style.display = 'block';
         }, 300);
     });
 
     document.body.appendChild(button);
+    document.body.appendChild(returnButton);
     document.body.appendChild(overlay);
 };
 
